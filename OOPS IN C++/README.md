@@ -1014,3 +1014,623 @@ int main()
     return 0;
 }
 ```
+## Operator Overloading
+
+- When an operator is overloaded with multiple jobs, it is known as operator overloading.
+- It is a way to implement compile time polymorphism.
+- Any symbol can be used  as function name -
+    - If it is a valid operator in C language and,
+    - If it is preceded by operator keyword.
+- We can not overload sizeof and ?: (conditional) operator.
+
+## Overloading of Binary Operator
+
+```cpp
+// operator overloading of + operator
+
+#include<bits/stdc++.h>
+using namespace std;
+
+class Complex{
+  
+  private:
+    int a, b;
+  public:
+    void setData(int x, int y)
+    {
+        a = x;
+        b = y;
+    }
+    
+    void showData()
+    {
+        cout<<"a = "<<a << " "<<"b = "<<b<<endl;
+    }
+    
+    // simple definition to add 2 object // without operator keyword function
+    
+    // Complex add(Complex c)
+    // {
+    //     Complex temp;
+        
+    //     temp.a = a + c.a;
+    //     temp.b = b + c.b;
+        
+    //     return temp;
+    // }
+    
+    Complex operator+(Complex c)
+    {
+        Complex temp;
+        
+        temp.a = a + c.a;
+        temp.b = b + c.b;
+        
+        return temp;
+    }
+};
+
+int main()
+{
+    Complex c1, c2, c3;
+    
+    c1.setData(3, 1);
+    c2.setData(5, 6);
+    
+    // we call c1 and pass c2 as argument to add both object and
+    // we get an returned object which will be assigned to c3.
+    // c3 = c1.add(c2);  
+    
+    // we can use operator symbols as function name, but then we have to write operator keyword before that
+    
+    // c3 = c1.operator+(c2);  // 1 way
+    
+    // we can write this function without dot operator also, but then we don't have to write operator keyword also
+    // and neither have to pass arguments in parenthisis
+    
+    c3 = c1 + c2; // 2 way
+    
+    
+    // So for Complex class objects we overload the + operator and now we can use + between Complex objects.
+    
+    // So now + operator has one meaning to add primitive data and now
+    // we made the second meaning which will only work when objects are of Complex types
+    // and now + has more than one definitions.
+    
+    c3.showData();
+    
+    return 0;
+}
+```
+
+The above code provinde 2 meaning to the + operator →
+
+1. Adding primitive data.
+2. Adding objects of complex type.
+
+- We can name functions as operator symbols, but than we have to write operator keyword before them.
+- we can call them as **c3 = c1.operator+(c2);  // function name is operator+**
+- We can call this function without using dot operator also, but then we don’t have to write operator keyword also and neither we have to pass arguments in parenthisis.
+- we can also call them as **c3 = c1 + c2;**
+- So this way we overload the + operator with different jobs -
+    - adding primitive data.
+    - adding complex  type objects, we made the second meaning which will only work when objects are of complex types , so now + have more than one definitions.
+
+## Overloading of  Unary Operator
+
+```cpp
+// unary operator
+#include<bits/stdc++.h>
+using namespace std;
+
+class Complex{
+  
+  private:
+    int a, b;
+  public:
+    void setData(int x, int y)
+    {
+        a = x;
+        b = y;
+    }
+    
+    void showData()
+    {
+        cout<<"a = "<<a << " "<<"b = "<<b<<endl;
+    }
+    
+    Complex operator-()
+    {
+        Complex temp;
+        
+        temp.a = -a;
+        temp.b = -b;
+        
+        return temp;
+    }
+};
+
+int main()
+{
+    Complex c1, c2, c3;
+    
+    c1.setData(3, 1);
+    
+    // unary operator no argument
+    
+    // c2 = c1.operator-(); // one way
+    
+    c2 = -c1; // second way
+    
+    c2.showData();
+    
+    return 0;
+}
+```
+
+- c1 calls -operator and no argument is passed , the value returned by -operator is assigned in c2.
+- **(c2 = -c1;)**
+- The above code provinde 2 meaning to the - operator →
+    1. Subtracting primitive data.
+    2. negating the data members of complex object.
+
+## Unary and Binary Operators
+
+- Binary operator **need 2 operands** to overload where one operand is caller object and other operand is the argument.
+- in binary operator **left operand is caller object** (this rule is only applicable to binary operators).
+
+- Unary operator **need 1 operand** to overload where caller object is the only operand.
+- In unary operator operand **position depends on operator behaviour**, for eg we use a = -3 and hence the behaviour is to use minus at left and hence we used c2 = -c1 ( it will depend on unary operator behaviour).
+
+## Overloading of unary operator ++(Pre and Post)
+
+```cpp
+// pre and post 
+#include<bits/stdc++.h>
+using namespace std;
+
+class Number{
+  
+  private:
+    int x;
+  public:
+    void setData(int a)
+    {
+        x = a;
+    }
+    
+    void showData()
+    {
+        cout<<"x = "<<x<<endl;
+    }
+    
+    Number operator++()   // pre increment
+    {
+        Number n;
+        
+        n.x = ++x;
+        
+        return n;
+    }
+    
+    // to make compiler differentiate between pre and post increment overloading we put an int parameter in post increment
+    
+    Number operator++(int) // post increment
+    {
+        Number n;
+        
+        n.x = x++;
+        
+        return n;
+    }
+   
+};
+
+int main()
+{
+    Number n1, n2, n3;
+    
+    n1.setData(5);
+    
+    n2 = ++n1;  // n1.operator++();
+    
+    n3 = n1++;  // n2.operator++();
+    
+    n1.showData();
+    n2.showData();
+    n3.showData();
+    
+    return 0;
+}
+```
+
+- to make compiler differentiate between pre and post increment overloading we put an int parameter in post increment.
+
+## Friend Function
+
+- Friend Function is not a member function of a class to which it is a friend.
+- Friend function is declared in the class with friend keyword.
+- It must be defined outside of the class to which it is friend.
+- Friend function can access any member of the class to which it is friend.
+- Friend function cannot access members of the class directly.
+- It has no caller object.
+- It should not be defined with membership label.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Complex{
+    private:
+        int a, b;
+    public:
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        // declare inside the class to which it is a friend
+        friend void fun(Complex);
+};
+
+// defined outside
+void fun(Complex c)
+{
+    cout<< c.a + c.b;
+}
+
+// friend function cannot access class member directly because we don't know,
+// the values belong to which caller object and friend function has no caller object.
+// so to make it meaningful we pass object while calling friend function.
+
+int main()
+{
+    Complex c1;
+    c1.setData(8, 7);
+    fun(c1);
+    
+    return 0;
+}
+```
+
+- Friend function cannot access class member directly because we don't know, the values belong to which caller object and friend function has no caller object. So to make it meaningful we pass object while calling friend function.
+- We require friend functions whenever we have to access the private or protected members of a class. This is only the case when we do not want to use the objects of that class to access these private or protected members.
+
+## Friend function (friend) to more than one class
+
+```cpp
+// accessing private variables of more than 1 class together
+
+#include<iostream>
+using namespace std;
+
+class B; // declaring so that compiler know B class exist
+
+class A
+{
+    private:
+        int a;
+    public:
+        A(int x){
+            a = x;
+        }
+    
+        friend void fun(A, B);
+};
+
+class B
+{
+    private:
+        int b;
+    public:
+        B(int x)
+        {
+            b = x;
+        }
+    
+        friend void fun(A, B);
+};
+
+void fun(A o1, B o2)
+{
+    // this function is accessing private members of 2 classes together
+    cout<<"sum is = "<<o1.a + o2.b<<endl;
+}
+
+int main()
+{
+    A o1(5);
+    B o2(6);
+    
+    fun(o1, o2);
+}
+```
+
+- If we want to **access private members of more than 1 classes in one operation** ,
+then only **friend function can do that** because private variables are accessed only
+through member function of class but then member function of class A can not access 
+members of class B therefore if we want to use member variable of class A and class B
+together then only friend function can do that.
+
+## Overloading of operators as a friend function
+
+### 1. Overloading of binary operator as a friend function
+
+```cpp
+// Overloading of binary operator as friend function
+#include<iostream>
+using namespace std;
+
+class Complex{
+    private:
+        int a, b;
+    public:
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        void showData()
+        {
+            cout<<"a = "<<a<<" "<<"b = "<<b<<endl;
+        }
+        
+        friend Complex operator+(Complex, Complex);
+        
+};
+
+Complex operator+(Complex c1, Complex c2)
+{
+    Complex temp;
+    
+    temp.a = c1.a + c2.a;
+    temp.b = c1.b + c2.b;
+    
+    return temp;
+}
+
+int main()
+{
+    Complex c1, c2, c3;
+    
+    c1.setData(3, 4);
+    c2.setData(5, 6);
+    
+    // Now there is no caller object so we have to pass both c1 and c2
+    // while overloading of a binary operator we pass only one argument (if we define binary operator as a member function)
+    // in case of friend function we have to pass 1 more argument (if we define binary operator as a friend function)
+    
+    c3 = c1 + c2; // c3 = operator+(c1, c2);
+    
+    c3.showData();
+    
+    return 0;
+    
+}
+
+// In general overloading of a binary or a unary operator we have to pass one more argument if we define operator as a friend function
+```
+
+- In the Above code there is no caller object so we have to pass both c1 and c2
+    - while overloading of a binary operator we pass only one argument (if we define binary operator as a member function)
+    - in case of friend function we have to pass 1 more argument (if we define binary operator as a friend function)
+
+### 2. Overloading of unaryoperators as a friend function
+
+```cpp
+// Operator overloading of unary operator as friend function
+
+#include<iostream>
+using namespace std;
+
+class Complex
+{
+    private:
+        int a, b;
+    public:
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        void showData()
+        {
+            cout<<"a = "<<a<<' '<<"b = "<<b<<endl;
+        }
+        
+        friend Complex operator-(Complex);
+        
+};
+
+Complex operator-(Complex c1)
+{
+    Complex temp;
+    
+    temp.a = -c1.a;
+    temp.b = -c1.b;
+    
+    return temp;
+}
+
+int main()
+{
+    Complex c1, c2;
+    
+    c1.setData(2, 4);
+    
+    c2 = -c1; // c2 = operator-(c1);
+    
+    c2.showData();
+    
+}
+
+// To make friend function meaningful we have to pass object as argument
+
+// overloading any operator we have to pass one extra argument if we overload it as a friend function 
+// as compare to overloading it as a member function
+```
+
+- In general overloading of a binary or a unary operator we have to pass one more argument if we define operator as a friend function.
+
+## Overloading of insertion and extraction operator.
+
+```cpp
+// Overloading of Insertion and Extraction operator
+
+#include <iostream>
+using namespace std;
+
+class Complex
+{
+    private:
+        int a, b;
+    public:
+        friend ostream& operator<<(ostream&, Complex);
+        friend istream& operator>>(istream&, Complex&);
+};
+
+ostream& operator<<(ostream& dout, Complex c1)
+{
+    dout<<"a = "<<c1.a<<" b = "<<c1.b<<endl;
+    return dout;
+}
+
+istream& operator>>(istream& din, Complex& c1)
+{
+    din >> c1.a >> c1.b;
+    return din;
+}
+
+int main()
+{
+    Complex c1;
+    
+    cout<<"Enter a Complex Number : "<<endl;
+    cin >> c1; // operator>>(cin, c1);
+    
+    cout<<"You Entered "<<endl;
+    cout<<c1;  // operator<<(cout, c1);
+    
+    return 0;
+}
+```
+
+- We can only overload insertion and extraction operator as a friend function because we need to achieve **cout<<c1** (i.e) providing cout with the capality to print non privitive data type / object.
+- So, we need **cout.operator<<(c1)** *( this means cout called the function operator<< and passes c1 as an argument to it)* but this is not possible because cout is the object of ostream class which has no definiton to print non primitive data types. Therefore to achieve this functionality we need to add this functionality in the ostream class but the class is abstract to us.
+- Same for cin we need to add the functionality in the istream class.
+- So, **cout and cin cannot be made as caller object.**
+- Now we may think of making Complex class object (c1) as the caller object but then we will achieve **c1 << cout // c1.operator<<(cout),** because in overloading of binary operator the caller object is always at left and we want to achieve cout<<c1.
+- This leaves us with no choice but to use friend function in overloading of insertion and extraction operator.
+- we pass the object of ostream class as reference and Complex object in overloading of insertion operator.
+- and , we pass the object of istream class as reference and complex object reference in overloading of extraction operator.(reference of complex object is passed because we want to make changes in actual arguments).
+- So, this way by using friend function we achieve overloading of insertion and extraction operator for non-primitive, Complex class object. i.e
+    - cin>>c1;
+    - cout<<c1;
+- we have to pass object of ostream and istream class as reference because, In C++, stream classes are abstract classes and cannot be instantiated. Abstract classes are incomplete and cannot be used to create objects because they contain one or more pure virtual functions.
+
+## Member Function of one class can become friend to another class
+
+```cpp
+// member function of one class as friend of other class
+#include<iostream>
+using namespace std;
+
+class A{
+    private:
+        int a, b;
+    public:
+        void fun();
+        
+        void fun2();
+};
+
+class B
+{
+    public:
+    
+        // if we want to make all function of A as friend in B this can be done by
+        friend class A; // by this whole class will become friend, class A is friend class of class B
+    
+        friend void A::fun(); 
+        // // by using scope resulution we make member function of A as friend of B
+        
+        // friend void A::fun2(); // all function of A can be made as friend of B like this only
+};
+
+void A::fun()
+{
+    
+    cout<<"hi";
+}
+
+int main()
+{
+    A obj;
+    B obj2;
+
+    obj.fun(); //member function of A
+    
+}
+
+// This code is not meaningful because to make it meaningful we pass object as argumen
+// so that friend function can access class members to which it is a friend.
+```
+
+- member function in one class can be made friend in another class.
+- member function of one class is defined as friend in another class using scope resolution operator. **friend void A::fun();**
+- all member functions of a class can be make friend in another class by writing **friend className**    in that class**;  ***by this whole class will become friend, class A is friend class of class B*
+
+## Working eg of making member function as friend of another class
+
+```cpp
+// member function of one class as friend of other class
+#include<iostream>
+using namespace std;
+
+class B;  // forward declaration of class B needed by class A
+
+class A
+{
+public:
+  void fun (B);			// member function in A
+};
+
+class B
+{
+private:
+  int a, b;
+public:
+  void setData (int x, int y)
+  {
+    a = x;
+    b = y;
+  }
+
+  friend void A::fun (B);	//specifying A class member function fun as a friend of B
+};
+
+// A::fun should be defined after class B definition only
+// because this member function can access Class B members
+
+void A::fun (B ob)	// have to specify it is fun of A
+{
+  cout << ob.a << ' ' << ob.b << endl;
+}
+
+int main ()
+{
+  A obj;
+  B obj2;
+
+  obj2.setData (2, 4);
+
+  obj.fun(obj2);	// calling A class member function fun, A:fun is friend of class B
+  
+  return 0;
+}
+```
+
+- here, member function of class A(fun) will able to access members of class B to which it is a friend.
