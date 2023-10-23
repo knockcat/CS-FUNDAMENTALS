@@ -1634,3 +1634,929 @@ int main ()
 ```
 
 - here, member function of class A(fun) will able to access members of class B to which it is a friend.
+
+## Inheritance in C++
+
+- It is process of inheriting properties and behaviours of existing class into a new class.
+- Existing class = old class = Parent class = Base class.
+- New class = Child class = derived class.
+- **Syntax**
+
+```cpp
+class Base_Class
+{
+
+};
+
+class Derived_Class : Visbility_Mode Base_Class
+{
+
+};
+```
+
+- **Example**
+
+```cpp
+class Car
+{
+
+};
+
+class SportsCar : public Car
+{
+
+};
+```
+
+## Types of Inheritance
+
+- Single Inheritance
+- Multilevel Inheritance
+- Multiple Inheritance
+- Hierarchical Inheritance
+- Hybrid Inheritance
+
+### Single Inheritance
+
+![Untitled](IMAGES/Untitled%203.png)
+
+```cpp
+class A
+{
+
+};
+
+class B : public A
+{
+
+};
+```
+
+- When a class is derived from an existing class.
+- Car is derived from Vehicle class.
+
+### Multilevel Inheritance
+
+![Untitled](IMAGES/Untitled%204.png)
+
+```cpp
+class A
+{
+
+};
+
+class B : public A
+{
+
+};
+
+class C : public B
+
+{
+
+};
+```
+
+- A class can also be derived from one class, which is already derived from another class.
+- Child is derived from parent and parent is derived from Grand-Parent class.
+
+### Multiple Inheritance
+
+![Untitled](IMAGES/Untitled%205.png)
+
+```cpp
+class A1
+{
+
+};
+
+class A2
+{
+
+};
+
+class B : public A1, public A2
+{
+
+};
+```
+
+- A class can also be derived from more than one base class, using a **comma-separated list:**
+- Btech-Student class is derived from DSA and DEV classes.
+
+### Hierarchical Inheritance
+
+![Untitled](IMAGES/Untitled%206.png)
+
+```cpp
+class A
+{
+
+};
+
+class B1 : public A
+{
+
+};
+
+class B2 : public A
+{
+
+};
+```
+
+- When more than one sub-class is derived from a single base class.
+- Two-Wheeler and four-Wheeler derived from Vehicle class.
+
+### Hybrid Inheritance
+
+- Mixture of more than one type of inheritance.
+
+## Access Specifiers or Visibility Modes
+
+![Untitled](IMAGES/Untitled%207.png)
+
+- Private →  members cannot be accessed (or viewed) from outside the class.
+- Protected → members cannot be accessed from outside the class, however, they can be accessed in inherited classes.
+- Public → members are accessible from outside the class
+
+### Types of users of a class
+
+- user 1 will create object of the class and can access only public members through dot operator.
+- user 2 will derived class from existing class.
+
+### Availability vs Accessibility
+
+- If a user creates an object of the class than all members of that class are available in that object, private members will also exists in it’s memory. **(i.e all three types of members will be available in the object).**
+- But accessibility means those we can use are only public members.
+
+## Role of Visibility modes in Inheritance
+
+![Untitled](IMAGES/Untitled.jpeg)
+
+### private
+
+- using private visibility mode protected and public members of base class will be private in derived class.
+
+### protected
+
+- using protected visibility mode protected and public members of base class will be protected in derived class.
+
+### public
+
+- using public visibility mode protected memebers of base class will be protected in derived class and public members of base class will be public in derived class.
+
+## An example of how Inheritance and visibility modes works
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A{
+    private:
+        int data;
+    protected:
+        void setData(int x) // this method will be accessed only by public member functions of derived class and base class
+        {
+            data = x;
+        }
+    public:
+        void showData()
+        {
+            cout<<"Value of data = "<<data<<endl;
+        }
+        
+        void indirectly(int x)
+        {
+            // for setting protected members of base class from base class object
+            setData(x);
+        }
+};
+
+class B : public A
+{
+    public:
+        void setValue(int x)
+        {
+            // protected members of base class can be accessed through derived class
+            
+            setData(x);
+        }
+};
+
+int main(){
+    
+    A obj, obj3;
+    
+    // cout<<obj.data<<endl; // error cannot access private member
+    
+    // obj.setData(4); // error protected member cannot be accessed by base class object
+    
+    B obj2;
+    
+    // cout<<obj2.data<<endl; // error cannot access private members of any class
+    
+    // obj2.setData(4); // error cannot access protected members of base class directly
+    
+    obj2.setValue(4); // value is set indirectly using member function of child class
+    // which called protected memeber of base class as protected memebers of base class are accessible by derived (child) class
+    
+    obj2.showData(); // print 4 // method inherited from base class
+    
+    obj.showData();  // print 0 as value is set for obj2
+    
+    // value set for protected memebers indirectly by using public memeber of base class using base class object
+    obj3.indirectly(5);
+    
+    obj3.showData(); // print 5
+    
+    
+}
+```
+
+- private members and protected members of base class cannot accessed by base class object directly.
+- They can only accessed using public member functions of base class.
+- protected members of base class is accessible in child class but only through public member functions of child class.
+- private members of base class are available and inherited in child class but cannot be accessed in child class.
+
+## Constructor and Destructor in Inheritance
+
+### Constructor
+
+### this is when base/child class object is created
+
+- when child class object is created then it consists of both parent and child class members therefore both parent and child constructor will run.
+- If we don’t create constructor by ourself than compiler will create default constructor by its own in both parent and child classes.
+- Since child class object is created then child class constructor will be called  but then child class contains members of parent also therfore child class constructor call parent class constructor before its execution.  **B() : A() {   }  // class B constructor called class A constructor by : A()**
+- Compiler write the necessary step of calling parent class constructor. **: A() ,** if we don’t write by ourself.
+- Order of execution of constructor is from parent to child.
+- Order of calling of constructor is from child to parent.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A{
+    public:
+        A()
+        {
+            cout<<"parent class constructor"<<endl;
+        }
+};
+
+class B : public A{
+    public:
+    // compiler will create default constructor by itself if we don't make by ourself
+    
+        B() : A()  // : A() compiler will write this necessary step if we don't write by ourself.
+        {
+            cout<<"child class constructor"<<endl;
+        }
+};
+
+int main()
+{
+    B obj;
+}
+```
+
+## Special Case of Constructor in Inheritance
+
+- We know, if we don’t create constructor by ourself compiler will always create default and copy constructor by itself.
+- and if we create any constructor by ourself compiler will not create default constructor but copy constructor will still be created by compiler.
+- Additionally if we define copy constructor by ourself compiler will not create any constructor.
+- so, we know during inheritance, child class constructor calls parent class constructor, but what if we create a parameterized constructor in parent class that means default constructor will not be created by compiler.
+- Then child class constructor would not be able to call the parameterized constructor of parent class because child class construtor can only call default constructor of parent class as we know compiler write the necessary step of calling parent class constructor if we don’t write by ourself but parent class parameterized constructor cannot be called by child class constructor and hence resulting in an error.
+- To get rid of the error we have to call parent class parameterized constructor by ourself or we have to define default constructor by ourself in parent class since compiler will not create it as if we create any constructor by ourself compiler doesn’t create default constructor by itself. In the above case we create parameterized constructor by ourself.
+- eg with code of the  above case →
+
+```cpp
+// Special case of Constructor in Inheritance
+#include<iostream>
+using namespace std;
+
+class A
+{
+    private:
+        int a;
+    
+    public:
+        A(int x)
+        {
+            cout<<"Parent Constructor"<<endl;
+            a = x;
+        }
+};
+
+class B : public A
+{
+    private:
+        int b; 
+        
+    public:
+    
+    // compiler will create default constructor by itself if we don't make any constructor by ourself
+    
+        // child class constructor can only call default constructor of parent class
+        
+        B(int x, int y) : A(x) // : A(x) we have to write the additional step of calling parameterized constructor, because compiler is only capable of calling : A()
+        {
+            cout<<"Child constructor"<<endl;
+            b = y;
+        }
+};
+
+int main()
+{
+    B obj(2,3);
+    
+    return 0;
+}
+```
+
+- If we want to call the parameterized constructor of parent class then we have to define the constructor in child class by ourself and also have to call the parameterized constructor of base class by ourself.
+- In the above code , if we define default constructor also in parent class, compiler will write the necessary step by itself and call the parent class default constructor itself.
+
+### Destructor
+
+- We make destructor to realease memory of resources of object or to complete every task which need to be done before destroying of the object.
+- child class destructor execute its coding and at very last step calls the parent class destructor.
+- Order of execution of destructor is from child to parent.
+- Order of calling of destructor is from child to parent.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A{
+    public:
+        A()
+        {
+            cout<<"parent class constructor"<<endl;
+        }
+        
+        ~A()
+        {
+            cout<<"Parent class Destructor"<<endl;
+        }
+};
+
+class B : public A{
+    public:
+    // compiler will create default constructor by itself if we don't make by ourself
+    
+        B() : A()  // : A() compiler will write this necessary step if we don't write by ourself.
+        {
+            cout<<"child class constructor"<<endl;
+        }
+        
+        ~B()
+        {
+            cout<<"Child Class Destructor"<<endl;
+        }
+};
+
+int main()
+{
+    B obj;
+}
+
+```
+
+![Untitled](IMAGES/Untitled%208.png)
+
+## this pointer in C++
+
+### Object Pointer
+
+- A pointer that contains the address of an Object is called Object Pointer.
+
+![Untitled](IMAGES/Untitled%209.png)
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Box
+{
+    private:
+        int l, b, h;
+    public:
+        void setData(int x, int y, int z)
+        {
+            l = x;
+            b = y;
+            h = z;
+        }
+        
+        void showData()
+        {
+            cout<<"l = "<<l<<' '<<"b = "<<b<<' '<<"h = "<<h<<endl;
+        }
+};
+
+int main()
+{
+    Box obj, *p;
+    
+    p = &obj;
+    
+    p->setData(2, 4, 5);
+    p->showData();
+    
+    return 0;
+}
+```
+
+### this Pointer
+
+- this is a keyword.
+- this is a local object pointer in every instance member function containing address of the caller object.
+- this pointer can not be modify.
+- It is used to refer caller object in member function.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Box
+{
+    private:
+        int l, b, h;
+    public:
+        void setData(int l, int b, int h)
+        {
+            this->l = l;
+            this->b = b;
+            this->h = h;
+        }
+        
+        void showData()
+        {
+            cout<<"l = "<<l<<' '<<"b = "<<b<<' '<<"h = "<<h<<endl;
+        }
+};
+
+int main()
+{
+    Box obj, *p;
+    
+    p = &obj;
+    
+    p->setData(2, 4, 5);
+    p->showData();
+    
+    return 0;
+}
+```
+
+## new and delete in C++
+
+### SMA
+
+- Static Memory Allocation
+- Memory given to variables and objects , their life time is decided at compile time.
+- Also known as compile time memory allocation.
+
+![Untitled](IMAGES/Untitled%2010.png)
+
+### DMA
+
+- Dynamic Memory Allocation.
+- Memory given to variables and objects are decided at runtime.
+- **C++ gives the facility of creating dyamic variables with the help of new keyword.**
+- malloc() anc calloc() are also available in C++.
+
+![Untitled](IMAGES/Untitled%2011.png)
+
+- the data type which we write after the new keyword an variable or object is created in memory of that type and its address is returned by new keyword and assigned to a pointer and we can only access that memory using that pointer.
+- we can also create array using new keyword, **float *q = new float [5]**, also we can take user input and can create array of given user input, let say x in inputed from user than, we can create array of x size dynamically as, **int *arr = new int[x]**;
+- **C++ give thes facitlity of realeasing dynamically created memory using  delete keyword.**
+- eg→ delete p (for variables/object);   delete []p; (for array)
+- On writing above syntax the memory location where p is pointing will be released.
+
+## Method Overriding
+
+- When a function of parent class with same name and same definition, different in coding is present in child class also this is known as method Overriding.
+
+## Method Hiding
+
+- When a function of parent class with same name but difference in arguments is present in child class then this is known as method hiding.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    public:
+        void f1()
+        {
+            
+        }
+        
+        void f2()
+        {
+            
+        }
+};
+
+class B
+{
+    public:
+        void f1()   // Method overriding (function with same name, same signature, different coding)
+        {
+            
+        }
+        
+        void f2(int x)  // Method hiding (function with same name but different in arguments)
+        {
+            
+        }
+};
+
+int main()
+{
+    B obj;
+    
+    obj.f1(); // B early binding (check if function with name f1 exists in class B and bind with it)
+    
+    // obj.f2(); // error (rule if function exist with the called name in class but with different signature than,
+    // even if function with same name and desired signature is present in  parent class compiler will not go in parent class because,
+    // it find the function with the given name in child class hence resulting in an error no matching call)
+    
+    obj.f2(4); // B
+    
+    // Now if above 2 calls have run we have said it function overloading as it says same name but different signature,
+    // but we find that both calls won't run and hence it is not function overloading and hence we can say that functions with same name
+    // and difference in arguments if one version is in parent class and another version is in child class this is not function overloading.
+    
+    // function overloading is only when both versions are in same class. 
+    
+}
+```
+
+- Compiler has a rule that if called function is not present in child class it search it in parent class.
+- In Method hiding,  if function exist with the called name in child class but with different signature than, even if function with same name and desired signature is present in  parent class, compiler will not go in parent class because, it find the function with the given name in child class hence resulting in an error no matching call.
+- If functions with same name and difference in arguments, If one version is in parent class and another version is in child class this is not function overloading. Function overloading is only when both versions are in same class.
+
+## Why we do function Overriding ?
+
+Suppose we have a Car class having a functionality of shifGear() and we have a SportsCar which also have a functionality of changeGear() now child class object have access to 2 methods of changing gears one is from the function of Car class and one of SportsCar class but why do we have 2 methods of changing gears accessible to SportsCar object because in reality sportsCar gear will be changed by only one way. So we don’t want this, What we want whenever we call through car class object gear should changed through car class definiton of shiftGear() and when we call same functionality of gear change through sportsCar object then modified definiton of sportsCar shiftGear() should run. Here function Overriding plays a role which allows us having same function in parent class and same function in child class both with different definitions (different coding).
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Car
+{
+    public:
+        void shiftGear()
+        {
+            cout<<"Car Definition"<<endl;
+        }
+};
+
+class SportsCar : public Car
+{
+    public:
+        void shiftGear()
+        {
+            // modified definition
+            cout<<"SportsCar Definition"<<endl;
+        }
+};
+
+int main()
+{
+    Car c;
+    SportsCar sc;
+    
+    c.shiftGear();  // Car
+    sc.shiftGear(); // SportsCar
+
+    return 0;
+}
+```
+
+![Untitled](IMAGES/Untitled%2012.png)
+
+- We needed Method Overriding whenever we want to change the implementation of services provided by parent class we override that method/service in child class.
+
+## Virual Function in C++
+
+- Base class pointer can point to the object of any of its descendant class.
+- But its converse is not true.
+
+## Problem in Method Overriding
+
+- We know base class pointer can point to object of any of its descendant class.
+- Whenever we call a function through an object then compiler look to the type of object and whenever we call through an object pointer than compiler will look to the type of pointer.
+- Whenever we make call to a function through pointer of base type which is pointing to child class object then because pointer is of type base it will go to base class and search for the function in base and execute the  definition that is in base class, but here the pointer contains the address of child class so it has to call the child class definition.
+- Since compiler perform early binding by seeing the type of the pointer the parent definition executes as it don’t know what address is in the pointer. since during compile time  what address the pointer contain is not known and thereby it is  wrong because we create object of child but base class functionality runs because of early binding performed by base class pointer.
+- And hence, their is no benifit of overriding function in child class.
+- The **problem is due to early binding** of compiler and therfore early binding should be restricted because due to early binding the pointer type is deciding which definition to call because compiler doesn’t able to know what address the pointer is pointing to.
+- The solution to the problem is to perfom late binding and let compiler decide at run time which definition to call because at run time compiler will get to know what address the base class pointer is pointing to.
+- To let the compiler know that it doesn’t have to do early binding and have to perform late binding (dynamic binding or binding at run time) we write **virtual keyword** in parent function which makes that function as virtual function and compiler knows that it has to perform late binding of that function.
+- A function defined as virtual in parent class will also be virtual in child class and in all of its descendent classes if it is made up of same signature as of parent class.
+
+## Early Binding
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    public:
+        void f1()
+        {
+            cout<<"A's Definition"<<endl;
+        }
+};
+
+class B : public A
+{
+    public:
+        void f1() // function overriding
+        {
+            cout<<"B's Definition"<<endl;
+        }
+};
+
+int main()
+{
+    A *p;  // base class pointer
+    B obj; // child class object;
+    
+    p = &obj; // base class object can point to object of any of its descendant class
+    
+    p->f1(); // A // early binding
+}
+```
+
+![Untitled](IMAGES/Untitled%2013.png)
+
+## Late Binding (virtual keyword)
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    public:
+        virtual void f1()
+        {
+            cout<<"A's Definition"<<endl;
+        }
+};
+
+class B : public A
+{
+    public:
+        void f1() // function overriding
+        {
+            cout<<"B's Definition"<<endl;
+        }
+};
+
+int main()
+{
+    A *p;  // base class pointer
+    B obj; // child class object;
+    
+    p = &obj; // base class object can point to object of any of its descendant class
+    
+    p->f1(); // B // late binding
+}
+```
+
+![Untitled](IMAGES/Untitled%2014.png)
+
+## Virtual Function Working Concept
+
+- If a class have atleast 1 virtual function than for that class compiler will declare a variable as a member of that class by itself.
+- Compiler creates a  member pointer variable ***_vptr** in base class, this can be verified by having a class A with virtual function and one class B with a normal funcition the size will be 8 bytes more of class A as compared to B because compiler will create this variable in class A as it contains virtual function.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    public:
+        virtual void fun()
+        {
+            
+        }
+};
+
+class B : public A
+{
+    public:
+        void fun()
+        {
+            
+        }
+};
+
+class C
+{
+    public:
+        void fun()
+        {
+            
+        }
+};
+
+int main()
+{
+    A obj;
+
+    C obj2;
+    
+    cout<<"Size of A class object : "<<sizeof(obj)<<endl;
+    cout<<"Size of B class object : "<<sizeof(obj2)<<endl;
+    
+    return 0;
+}
+```
+
+![Untitled](IMAGES/Untitled%2015.png)
+
+- This *_vptr pointer variable will not be created in child class seperately because this variable is an instance member variable pointer and will be inherited in all its desecendant classes.
+- Compiler also creates an static array of pointers for every class which have virtual functions inside it, the pointers are function pointers as they stores the address of virtual functions. This array is called as **vtable.**
+- So the class which have virtual functions and its descendant classes vtable is created for all of them seperately.
+- *_vptr which is a member pointer variable points to the address of vtable (static array) of the class whose object is created.
+- So the compiler perform 2 jobs→
+    - for every class where it find the virtual function it creates a member pointer variable _*vptr in it but in the descendant classes it do not creates because this pointer variable will be inherited by desecendant classes.
+    - and, also creates vtable for every class having virtual function seperately which is an static array of function pointers.
+- vtable contains pointers which points to only address of virtual functions.
+
+### Base Class object pointer pointing to base class object
+
+![Untitled](IMAGES/Untitled%201.jpeg)
+
+- In the above diagram the vtable of class A will contain pointers pointing to addresses of **f2, f3, f4** only as they are virtual functions and *_vptr is pointing to vtable of class A.
+- Now in the above code we have a pointer *p of A type and  also it is pointing to the address of object of A type  [*p = &o1].
+- Now *_vptr is member variable pointer created by compiler is associated with every object independently
+- In the above code the object is of base class (A) and hence *_vptr will point to the address of vtable of base class.
+- Now, p→f1() is not virtual function so it will have early binding.
+- p→f2(), p→f3(), p→f4() will have late binding since they are virtual function.
+- p→f4(5) will have early binding since it is method hided in child class.
+- f1() have early binding which means compiler will decide and compiler decide on the basis of pointer type which is of A type and it will find it definition in A class i.e is there any f1() exist in class A, In the above case it exists so compiler bind f1() of class A.
+- **f2()** have late binding so it will check p pointer pointing to address of which type here p is pointing to object of A type (o1). o1 consists of *_vptr which is pointing to vtable of class A and it will check for function pointer which is pointing to f2 in vtable, here vtable has an entry of f2 which is pointing to f2’s definition of base class and hence compiler will bind it with f2 of base class.
+- **f3()** will same as above run definition of base class.
+- **f4()** will same as above run definiton of base class.
+- f4(5) this will be error because ptr points to address of type A, which means compiler search fordefinition of f4(5) in class A and since there is no such definiton of f4 in class A with a single argument it will result in error, unmatching call.
+
+### Code Demostration of above Example
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    public:
+        void f1()
+        {
+            
+        }
+        
+        virtual void f2()
+        {
+            
+        }
+        
+        virtual void f3()
+        {
+            
+        }
+        
+        virtual void f4()
+        {
+            
+        }
+};
+
+class B : public A
+{
+    public:
+        void f1()
+        {
+            
+        }
+    
+        void f2()   // Method Overriding
+        {
+            
+        }
+        
+        void f4(int x) // Method Hiding
+        {
+            
+        }
+};
+
+int main()
+{
+   A* p, o1;
+   p = &o1; // *_vptr point to address of vtable of class A
+   
+   p->f1(); // Early Binding
+   p->f2(); // Late Binding
+   p->f3(); // Late Binding
+   p->f4(); // Late Binding
+   // p->f4(5); // Early Binding // error no matching call
+   
+   return 0;
+}
+```
+
+### Base class object pointer pointing to child class object
+
+![Untitled](IMAGES/Untitled%202.jpeg)
+
+- In the above diagram the vtable of class B will contain pointers pointing to addresses of **f2, f3, f4** only as they are virtual functions and *_vptr is pointing to vtable of class B.
+- Now, f2 have definitions in parent class also but since it is overrided in class B the vtable of class B will keep the pointer pointing to the address of latest definition of f2 that is in class B.
+- f3, is not overrided in class B but B class is getting that service through inheritance and hence there is an virtual function with name f3 in class B also so vtable of class B will have a pointer pointing to f3 of parent class.
+- Now, f4 is a virtual function in parent class but that function is not overrided in child class but hided (Method hiding) in child class as it has same name as of parent class function but different signature and hence vtable of class B will have a pointer pointing to f4 of parent class.
+- Now, in above code *p is an object pointer of type A which is pointing to the address of object of class B (o2)  [*p = &o2].
+- Now, if whenever there will be late binding , vtable of class B will be referred.
+- Here, p→f1() is not virtual function so it will have early binding.
+- p→f2() , p→f3() , p→f4() are virtual function in base class and they are virtual in child class also therfore the compiler will perform late binding for them.
+- p→f4(5) this is method hiding and not overriding as same function is present in parent class but with different signature so it will undergo early binding as this is not virtual.
+- now, p→f1(), f1() have early binding which means compiler will decide and compiler decide on the basis of pointer type which is of A type and it will find it definition in A class i.e is there any f1() exist in class A, In the above case it exists so compiler bind f1() of class A. Though the pointer is pointing to object of class B therfore compiler should  have search for the definition in child class but since during early binding compiler decides which function to bind on the basis of pointer type it will search in class A and if the definition is found then it will bind otherwise it will be an error of unmatching call. In the above scenario it found that definiton in class A and therfore it will bind it with class A definiton only which is wrong **(the problem with method overriding)** that’s why we should have declare that function virtual to make compiler to perform late binding.
+- now ,p→f2(), **f2()** have late binding so it will check p pointer pointing to address of which type here p is pointing to object of B type (o2). o2 consists of *_vptr which is pointing to vtable of class B and it will check for function pointer which is pointing to f2 in vtable, here vtable has an entry of f2 which is pointing to f2’s definition of child class and hence compiler will bind it with f2 of child class.
+- now ,p→f3(), **f3()** have late binding so it will check p pointer pointing to address of which type here p is pointing to object of B type (o2). o2 consists of *_vptr which is pointing to vtable of class B and it will check for function pointer which is pointing to f3 in vtable, here vtable has an entry of f3 which is pointing to f3 in base class and hence compiler will bind this call with f3() of base class. Here, it points to f3() of base because f3() is not overrided in child class.
+- now ,p→f4(), **f4()** have late binding so it will check p pointer pointing to address of which type here p is pointing to object of B type (o2). o2 consists of *_vptr which is pointing to vtable of class B and it will check for function pointer which is pointing to f4 in vtable, here vtable has an entry of f4 which is pointing to f4 in base class and hence compiler will bind this call with f4() of base class. Here, it points to f4() of base because f4() is not overrided in child class, f4() is hided in child class.
+- now, p→f4(5) , have early binding, which means compiler will decide and compiler decide on the basis of pointer type which is of A type and it will find it definition in A class i.e is there any f4(5) exist in class A and this definiton is not present in base class , therefore this will result in an error of unmatching call. Here required definition is present in child class but still it do not check in child class because compiler perform early binding on the basis of pointer type which means it will only check in class A.
+
+### Code Demostration of above Example
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    public:
+        void f1()
+        {
+            
+        }
+        
+        virtual void f2()
+        {
+            
+        }
+        
+        virtual void f3()
+        {
+            
+        }
+        
+        virtual void f4()
+        {
+            
+        }
+};
+
+class B : public A
+{
+    public:
+        void f1()
+        {
+            
+        }
+    
+        void f2()   // Method Overriding
+        {
+            
+        }
+        
+        void f4(int x) // Method Hiding
+        {
+            
+        }
+};
+
+int main()
+{
+   A* p; 
+   B o2;
+   
+   p = &o2; // *_vptr point to address of vtable of class B
+   
+   p->f1(); // Early Binding
+   p->f2(); // Late Binding
+   p->f3(); // Late Binding
+   p->f4(); // Late Binding
+   // p->f4(5); // Early Binding // error no matching call
+   
+   return 0;
+}
+```
