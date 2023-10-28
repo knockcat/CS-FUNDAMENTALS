@@ -2560,3 +2560,239 @@ int main()
    return 0;
 }
 ```
+## Pure Virtual Function
+
+- A do nothing function is a pure virtual function.
+
+### How we make a function pure virtual
+
+- If we *declare a function fun() in class and didn’t define it*, so usually we define it outside the class using membership operator.
+- So fun() function will be considered as a member function which we declare inside the class and may prefer it defining outside the class.
+- But, what if we didn’t define that function inside nor outside the class so that function will be do nothing function but for doing so we have to assign that function = 0 as a sytax so that the compiler will get to know that this function is a do nothing function as it’s no definition exist inside or outside the class.  **void fun() = 0;**
+- Now, if a class has a function which has no definition and is do nothing so, if we create the object of this class and try to call this function than this is wrong because this function is not defined and therefore calling this type of function should be illegal.
+- Therefore, **C++ restricts the calling of do nothing function by creating some rules.**
+    - If we create the object of the class which contain the do nothing function then we can call this type of function **so the first rule is formed** *that we cannot create objects of the class which contains this type of function because if we cannot create object we cannot call that function.*
+    - But now, since we can create child class of the base class which contains a do nothing function through inheritance. So if we create the object of the child class than also we can call the fun() function through child object. **so the second rule is formed**
+        - if we create a child class of a base class which contains a function with no definition than *it is compulsory that we have to override that function fun() in child class. so,*  now since, parent class don’t have fun() defintion but child class contains its defintions and now by the concept of overriding we know if child class object will call fun() function than the function call will be bind with child definition of fun().
+        - So, in short 2 rules are formed
+            - If a class contains a do nothing function its objects can not be instantiated, but what if this class have other member functions then,
+            - second rules is created that we can inherit this class in base class so that we can access other functionalities of base class through child class object, but now it is necessary to override the do nothing function in child class.
+        - Now we  know thorugh the concept of virtual function (method overriding) that if from base class pointer we point the child class object than calling a function from that pointer compiler peform early binding as it refers to the type of the pointer and not to the address the pointer is pointing to as it is not known at compile time. Therefore compiler search that definition of do nothing function in base class and now compiler will call this definition so this is one more way through which do nothing function can be called so we have to restrict this call also and we know through concept of virtual function that we have to make compiler to perform late binding of this function to restrict call to this function and this is done by writing virtual keyword before function definition and hence making this function as virtual function to make compiler know to perform late binding of this function.
+        - And now because of late binding pointer type will not be referred but what type of object it is pointing will be referred and now there is now way to call fun() function of base class so this function is called as  pure virtual function. **virtual void fun() = 0; // pure Virtual Function**
+- If some class has pure virtual function than we can only use this class by creating its child class but we have to override that function in child class, as class containing pure virtual function is called an abstract class and this type of class cannot be instantiated.
+- What if we do not override the pure virtual function of base class in child class, than we have to again make that function as pure virtual function in child class but than child class object also cannot be instantiated because it also contain an pure virtual function and hence to access the functionality of this class we have to again inherit this class and override the pure virtual function in the new child class.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Person
+{
+    public:
+          virtual void fun() = 0; // pure Virtual Function
+};
+
+class Student : public Person
+{
+    public:
+        void fun() // to be overrided compulsory
+        {
+            // modified definition
+            cout<<"Updated"<<endl;
+        }
+        
+        // if we donot override this function than we again have to make this function as pure Virtual in 
+        // this (child) class also and then to use this class we have to again inherit this class and than have
+        // to override this pure virtual function in new cild class
+        
+        // virtual void fun() = 0; if we dont override in child class also
+};
+
+int main()
+{
+    // Person obj; // object of this class cannot be created
+    
+    Person *ob; // object pointer
+    
+    Student  obj2;
+    
+    ob = &obj2;
+    
+    ob->fun(); // late binding // Student
+    
+    return 0;
+}
+```
+
+## Abstract Class in C++
+
+- A class containing pure virtual function is called an abstract class.
+- We can not instantiate abstract class.
+- In C++ abstract class is created by creating atleast 1 pure virtual function inside it.
+- In Java we have abstract keyword to declare an class as abstract.
+
+## Why we make Abstract Class?
+
+- We make pure virtual function because we have to make abstract class.
+
+![Untitled](IMAGES/Untitled%2016.png)
+
+- Let say under a project we have to make a student class and the same way we have to make another class as faculty and they have some similarities likes name, phone_no, address and other common things these both classes have similar functionalities because in general they both are **Person**.
+- So, there is a **concept of generalisation** in object oriented programming so we have to do generalisation that is if 2 or more classes are the subcategory of a same category than we should make that category. i.e this category will be the super category of these classes.
+- In the above example person will be the super category of student and faculty.
+- So we did generalisation by making a super class which will contain functionalities that will be common to both student and factulty.
+- Now some members will be specifically be in student class that will not be in faculty class and vice-versa. for eg, student have roll no and factulty have salary.
+- Now by this way maintainance become easy and code reusability is achieved.
+- Now, if we create an object of student it will represent an student and same way  faculty object  represent a faculty but when we create object of person class to which it will represent in the system as we are not interested in storing a person information in system we are concerned with only student and faculty.
+- So in above project just creating an object of person is of no need for the system, we create person class to provide generalisation and common features to both student and faculty.
+- So Person class is good in terms of maintaining architecture, achieving reusability etc but it’s object is of need.
+- So here we can make Person as an abstract class as then it cannot be instantiated.
+- Therefore in many scenarios we can come across a situation where we feel object of a class should not be created so we can make it as an abstract class.
+- Also by creating an abstract class we are forced to override the pure virtual function of abstract class so if we are under a situation where we have to provide different meaning to all the same functionality of diffrent sub classes and there is no meaning of that functionality in the base class than we can define that function as pure virtual in base class due which we have to compulsary override that function in all the subclasses.
+
+![Untitled](IMAGES/Untitled%2017.png)
+
+- In the above scenario we have Account class which is super-Class of current and saving and suppose we have a functionality of rateOfInterest() which definitely have no meaning for account but it definitely has some meaning and hence definition for current and saving. so for this we can create rateOfInterest() as pure virtual function in  Account class as we have to compulsory define its definiton for both current and saving class and both definitions differes from each other so thereby we have to override that function in all sub-classes.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Account
+{
+    public:
+        int rate;
+        
+        virtual void rateOfInterest(int x) = 0; // pure virtual function
+        
+        void displayRate()
+        {
+            cout<<"Rate associated with your Account "<<rate<<endl;
+        }
+};
+
+class Current : public Account
+{
+    public:
+        void rateOfInterest(int x)
+        {
+            rate = x;
+        }
+};
+
+class Saving : public Account
+{
+    public:
+        void rateOfInterest(int x)
+        {
+            rate = x;
+        }
+};
+
+int main()
+{
+    Current c;
+    Saving s;
+    
+    c.rateOfInterest(5);
+    s.rateOfInterest(8);
+    
+    c.displayRate();
+    s.displayRate();
+    
+    return 0;
+}
+```
+
+![Untitled](IMAGES/Untitled%2018.png)
+
+- In the above code by making Account class as abstract we can able to define different meaning for rate of current and saving class.
+- Account class helps in generalisation and reusing same functionality for both current and saving classes.
+
+## Inititalizers in C++
+
+- Initializer List is used to initialize data members of a class.
+- The list of members to be initialized is indicated with constructor as a comma seperated list followed by a colon.
+- Example of Initializers List.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    private:
+        int a, b, c;
+    public:
+        Dummy():a(5), b(6), c(7)  // we can initialise these values as initializer list
+        {
+            
+        }
+        
+        void Display()
+        {
+            cout<<"value of a, b, and c = "<<a<<' '<<b<<' '<<c<<endl;
+        }
+};
+
+int main()
+{
+    Dummy obj;
+    
+    obj.Display();
+    
+    return 0;
+}
+```
+
+### The above can be done using constructor only then why we need initializers list ?
+
+- What if we have a **const variable inside a class as a member variable** then we cannot intialize it inside the class because in C++ we have a rule that while declaring a variable inside a class we cannot initialize it as it do not get memory at that time and the rule fo const variable is that we have to initialize it as we decalre it.
+- What if we have a reference variable inside a class as a member variable then we cannot intialize it inside the class because in C++ we have a rule that while declaring a referrence variable we have to intialize it to the variable whose reference it will be keeping but since in class we cannot initialize it as none of class variable get memory at that time.
+- So, there are situations where initialization of data members inside constructor doesn’t work and Initializer List must be used.
+    - For initialization of non-static const data members.
+    - For initialization of reference members.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    int a, b;
+    const int x;    // rule is to initialize const variable on declaration
+    int &m;          // rule is to initialize referrence variable on declaration
+    
+    // otherwise error so here we have no other way rather than to use initializer list
+    public:
+        Dummy(int a, int b, int& r) : x(5) , m(r)
+        {
+            this->a = a;
+            this->b = b;
+        }
+        
+        void showData()
+        {
+            cout<<"value of a and b = "<<a << ' '<<b<<endl;
+            cout<<"value of const variable x = "<<x<<endl;
+            cout<<"value of referrence variable "<<m<<endl;
+            
+            ++m; // for checking if value of referrence updated or not
+        }
+};
+
+int main()
+{
+    int c = 3;
+   
+    Dummy obj(1 , 2, c); 
+    
+    obj.showData();
+    
+    cout<<"update value of c = "<<c<<endl;
+    
+    return 0;
+}
+```
+
+## Deep Copy and Shallow Copy
