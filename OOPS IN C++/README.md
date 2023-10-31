@@ -2796,3 +2796,786 @@ int main()
 ```
 
 ## Deep Copy and Shallow Copy
+
+## How we can create copy of  Object ?
+
+### Copy Constructor
+
+- Copy constructor is called when we create an object of a class and initialize it with the object of same class.
+- Dummy d2 = d1; // default copy constructor will be called;
+- by default compiler make copy constructor by itself.
+
+### Implicit copy assignment operator
+
+- If we create object of class first and don’t initalize it there and then on the later step we assign that object with another object of same class then implicit copy assignment operator is called.
+- Dummy d3;    d3 = d1; // default assignment operator will be called;
+- by default compiler overloads copy assignment operator by itself.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    private:
+        int a, b;
+    public:
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+        }
+};
+
+int main()
+{
+    Dummy d1;
+    
+    d1.setData(3, 4);
+    
+    // create copy of object
+    
+    Dummy d2 = d1;  // default copy constructor will be called;
+    
+    Dummy d3;
+    
+    d3 = d1; // default copy assignment operator will be called;
+
+    d2.showData();
+    d3.showData();
+    
+    return 0;
+}
+```
+
+## Creating Copy of Object through Explicit Copy Constructor and Explicit Copy Assignment Operator
+
+- If we create copy constructor by ourself compiler will not create any constructor by itself.
+- If we create explicit copy assignment operator compiler will not create by itself.
+- example
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    private:
+        int a, b;
+    public:
+        Dummy()
+        {
+            
+        }
+        
+        Dummy(Dummy &d)  // explicit copy constructor
+        {
+            cout<<"explicit copy constructor"<<endl;
+            
+            a = d.a;
+            b = d.b;
+        }
+        
+        void operator=(Dummy& d1)  // explicit copy assignment operator
+        {
+            cout<<"explicit copy assignment operator"<<endl;
+            
+            a = d1.a;
+            b = d1.b;
+        }
+        
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+        }
+};
+
+int main()
+{
+    Dummy d1;
+    
+    d1.setData(3, 4);
+    
+    // create copy of object
+    
+    Dummy d2 = d1;  
+    //Dummy d2(d1); // copy constructor will be called;
+    
+    d2.showData();
+    
+    Dummy d3;
+    
+    d3 = d1;  
+    // d3.operator=(d1); // copy assignment operator will be called;
+    
+    d3.showData();
+    
+    return 0;
+}
+```
+
+- Output
+
+![Untitled](IMAGES/Untitled%2019.png)
+
+### Shallow Copy
+
+- Creating copy of object by copying data of all member variables as it is.
+- Above codes performes shallow Copy
+
+### Deep Copy
+
+- Creating an object by copying data of another object along with the values of memory resources resides outside the object but handled by that object.
+
+![Untitled](IMAGES/Untitled%203.jpeg)
+
+- Let say we have a pointer variable in a class *p and we point it to a dynamic block of memory inside the class.
+- Now we can use setData() function to initialize values to variables of class.
+- Now the class object have some memory resources which resides outside the object but is handled with the help of object only because object have the pointer which is pointing to that memory resource.
+- Now we if try to make copy of the object then **by default shallow copy is performed** and values will be copied correspondingly.
+- The problem face by this is, let consider the above eg so if we make the copy of let say d1 object which comprises of a, b, and *p to another object let say d2 then dummy d2 = d1, means default copy constructor will be called by the constructor.
+- The constructor will copy d1.a in a, d1.b in b and d1.p in p of object d2 but p  contains the address which is pointing to some dynamic block and since shallow copy is performed now p of d2 object will also point to the same dynamic block to which d1.p is pointing which is wrong because we want different copy of d1.
+
+### Wrong
+
+![Untitled](IMAGES/Untitled%204.jpeg)
+
+- So by shallow copy only copy of members variable is performed and not of outside memory resources.
+- So when member variable is pointer, copying data as it is, is dangerous because both pointers are pointing to same memory resource, so to prevent this we have to create copy constructor or copy assignment operators by ourself and handle this problem.
+- This is known as deep copy.
+
+### Right
+
+![Untitled](IMAGES/Untitled%205.jpeg)
+
+- Also p is pointing to dynamic block and after the object get destroyed no one is able to access that memory location because p will also get destroyed. so we have to release this dynamic memory before the object get destroyed through destructor.
+- If shallow copy is performed than both pointer will point to same memory location and than if either of any one object get destroyed this memory will also get released and then the pointer of  other object still points to that released memory location and called dangling  pointer as it points to a memory location which no longer exists in memory due which program might get crashed.
+
+## Deep Copy through explicit copy constructor
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    private:
+        int a, b;
+        int *p;
+    public:
+        Dummy()
+        {
+            p = new int;  // dynamic block (outside memory resource)
+        }
+        
+        Dummy(Dummy &d)  // explicit copy constructor
+        {
+            cout<<"explicit copy constructor"<<endl;
+            
+            a = d.a;
+            b = d.b;
+            p = new int; // new dynamic block
+            *p = *(d.p);
+        }
+        
+        void setData(int x, int y, int z)
+        {
+            a = x;
+            b = y;
+            *p = z;
+        }
+        
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+            cout<<"Value of *p = "<<*p<<endl;
+        }
+
+				~Dummy()
+        {
+            delete p;
+        }
+};
+
+int main()
+{
+    Dummy d1;
+    
+    d1.setData(3, 4, 5);
+    
+    // create copy of object
+    
+    Dummy d2 = d1;  
+    //Dummy d2(d1); // copy constructor will be called;
+    
+    d2.showData();
+    
+    return 0;
+}
+```
+
+### Output
+
+![Untitled](IMAGES/Untitled%2020.png)
+
+## Deep Copy through explicit copy assignment operator
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    private:
+        int a, b;
+        int *p;
+    public:
+        Dummy()
+        {
+            p = new int;  // dynamic block (outside memory resource)
+        }
+        
+        void operator=(Dummy& d1)  // explicit copy assignment operator
+        {
+            cout<<"explicit copy assignment operator"<<endl;
+            
+            a = d1.a;
+            b = d1.b;
+            p = new int; // new dynamic block
+            *p = *(d1.p);
+        }
+        
+        void setData(int x, int y, int z)
+        {
+            a = x;
+            b = y;
+            *p = z;
+        }
+        
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+            cout<<"Value of *p = "<<*p<<endl;
+        }
+
+				~Dummy()
+        {
+            delete p;
+        }
+};
+
+int main()
+{
+    Dummy d1;
+    
+    d1.setData(3, 4, 5);
+    
+    // create copy of object
+    
+    Dummy d3;
+    
+    d3 = d1;  
+    // d3.operator=(d1); // copy assignment operator will be called;
+    
+    d3.showData();
+    
+    return 0;
+}
+```
+
+### Ouput
+
+![Untitled](IMAGES/Untitled%2021.png)
+
+## Type Conversion
+
+- int, char, float, double are primitive types.
+- class type is any class we defined.
+
+```cpp
+int x = 4;
+float y;
+y = x; // automatic type conversion
+
+float yy = 3.4;
+int xx;
+xx = yy; // automatic type conversion
+```
+
+- data type conversion may result in data loss.
+- when we do primitive to primitive data type conversion it take place automatically.
+- when one is of primitive and other is of non-primitive than assigning one type to another will result in an error.
+
+```cpp
+Complex c1;
+int x = 5;
+c1 = x; // error
+```
+
+- The above thing cannot be done automatically because c1 is not primitive but class type so we have to do type conversion by ourself.
+
+## 1. Primitive type to Class type
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Complex
+{
+    private:
+        int a, b;
+    public:
+        Complex()
+        {
+            
+        }
+        
+        Complex(int x)
+        {
+            a = x;
+            b = 0;
+        }
+        
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+        }
+};
+
+int main()
+{
+    Complex c1;
+    int x = 5;
+    
+    c1 = x; // type conversion
+    // c1.Complex(x); we cannot write this, just for understanding
+    
+    c1.showData();
+    
+    return 0;
+}
+```
+
+![Untitled](IMAGES/Untitled%2022.png)
+
+- Can also be done using copy assignment operator
+
+```cpp
+    		void operator=(int x)
+        {
+            a = x;
+            b = 0;
+        }
+
+				// c1 = x; // c1.operator=(x)
+```
+
+- If we write explicit copy assignment operator by ourself then while doing c1 = x; **// c1.operator(x)** explicit copy assignment operator will do the type conversion or if we don’t define it then also explicit constructor will perfrom type conversion but we have define either of one by ourself.
+- while assigning during creation of object **Complex c1 = x;** this is only can be done using explicit constructor and not by copy assignmnet operator because while creating the object we are assigning the value so constructor will get called.
+
+## 2. Class type to Primitive type
+
+```cpp
+Complex c1;
+c1.setData(3, 4);
+int x;
+x = c1; // error
+```
+
+- Class type to primitive type can be implemented using casting operator.
+
+```cpp
+// syntax
+operator type()  // here type is int, float, double, char
+{
+	return (type-data);
+}
+```
+
+- Example
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Complex
+{
+    private:
+        int a, b;
+    public:
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+        }
+        
+        operator int() // casting operator
+        {
+            return a;
+        }
+};
+
+int main()
+{
+    Complex c1;
+    
+    c1.setData(3, 4);
+    
+    c1.showData();
+    
+    int x;
+    
+    x = c1;  // c1.operator int(); // just for understanding, not syntax
+    
+    cout<<"value of x = "<<x<<endl;
+    
+    return 0;
+}
+```
+
+![Untitled](IMAGES/Untitled%2023.png)
+
+## 3. One Class type to another Class type
+
+![Untitled](IMAGES/Untitled%206.jpeg)
+
+```cpp
+i1 =  p1; // error
+```
+
+- we can achieve one class to different class type conversion using→
+    - constructor
+    - casting operator
+- If we have to perform type conversion using constructor than constructor will be made in left to assignment operator object class.
+- If we have to perform type conversion using casting operator then casting operator will be made in right to assignment operator object class.
+
+### Using Constructor
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Product
+{
+    private:
+        int m, n;
+    public:
+        void setData(int x, int y)
+        {
+            m = x;
+            n = y;
+        }
+        
+        int getM()
+        {
+            return m;
+        }
+        
+        int getN()
+        {
+            return n;
+        }
+};
+
+class Item
+{
+    private:
+        int a, b;
+    public:
+        Item()
+        {
+            
+        }
+        
+        Item(Product p)
+        {
+            a = p.getM(); // like this because private members cannot acces directly
+            b = p.getN();
+        }
+    
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+        }
+};
+
+int main()
+{
+    Product p1;
+    Item i1;
+    
+    p1.setData(5, 6);
+    
+    i1 = p1;
+    
+    i1.showData();
+}
+```
+
+### Output
+
+![Untitled](IMAGES/Untitled%2024.png)
+
+### Using Casting Operator
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Item
+{
+    private:
+        int a, b;
+    public:
+        void setData(int x, int y)
+        {
+            a = x;
+            b = y;
+        }
+        void showData()
+        {
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+        }
+};
+
+class Product
+{
+    private:
+        int m, n;
+    public:
+        void setData(int x, int y)
+        {
+            m = x;
+            n = y;
+        }
+        
+        operator Item()
+        {
+            Item i;
+            i.setData(m, n);
+            return i;
+        }
+};
+
+int main()
+{
+    Product p1;
+    Item i1;
+    
+    p1.setData(5, 6);
+    
+    i1 = p1; // type casting // casting operator
+    
+    i1.showData();
+}
+```
+
+![Untitled](IMAGES/Untitled%2024.png)
+
+## Exception Handling in C++
+
+## Exceptions
+
+- Exception is any abnormal behaviour, run time error
+- Exception are off beat situation in our program where our program should be ready to handle it with appropriate response.
+
+## Exception Handling
+
+- C++ provides a built-in error handling mechanism that is called exception handling.
+- Using exception handling, we can more easily manage and respond to runtime errors.
+
+## try, catch, throw
+
+- Program statements that we want to monitor for exceptions are contained in **try** block.
+- If any exception occurs within the try block, it is thrown (using **throw**).
+- The exception is caught, using **catch** and processed.
+
+```cpp
+try
+{
+	throw exception;
+}
+
+catch(exception_type e)
+{
+	
+}
+```
+
+### Rules
+
+- try and catch block should be made together, absence of any one result in error.
+- catch block should be writting just after try block.
+- catch block should be of type exception throwed.
+- there can be multiple catch blocks after try block.
+
+### Catch
+
+- When an exception is caught, argument will recieve its value.
+
+```cpp
+catch (exception_type e) // int e
+{
+
+}
+```
+
+- If you don’t need access to the exception itself, specify only type in the catch clause-argument is optional.
+
+```cpp
+catch (exception_type) // int
+{
+
+}
+```
+
+- Any type of data can be caught, including classes that we create.
+
+### throw
+
+- The general form of the throw statement is : **throw exception;**
+- Throw must be executed either within the try block proper or from any function that the code within the block calls.
+
+```cpp
+// from function and try-catch block
+void fun(){
+	throw 10;
+}
+
+try{
+	fun();
+}
+catch(int e){
+
+}
+```
+
+```cpp
+// try-catch block proper
+try{
+	throw 10;
+}
+catch(int e){
+
+}
+```
+
+- Throwing exception without proper try-catch block result in temination of program.
+- If throwed exception is not handled properly using proper catch block, will result in termination of program.
+- below catch block can catch any type of exception.
+
+```cpp
+try{
+  throw any_type;
+}
+
+catch(...)
+{
+
+}
+```
+
+- Example → working of try-catch
+
+```cpp
+#include<iostream>
+using namespace std;
+
+int main()
+{
+    int type = 3;
+    
+    try{
+        if(type == 1)
+            throw 1;
+        else if(type == 2)  // double type catch should be there
+            throw 3.0;
+        else 
+            throw "hello";
+    }
+    
+    catch(int e) // can catch int type exception
+    {
+        cout<<e<<endl;
+    }
+    
+    catch(double e) // can catch double type exception
+    {
+        cout<<"double exception"<<endl;
+    }
+    
+    catch(...)  // this can catch all exception
+    {
+        cout<<"Handled"<<endl;
+    }
+    
+    return 0;
+}
+```
+
+![Untitled](IMAGES/Untitled%2025.png)
+
+- If we don’t throw any value after writing throw than any of our catch block will not run and our program will get terminate.
+- **Example** → program get teminate.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+int main()
+   
+    try{
+        throw;
+    }
+    catch(int e) // can catch int type exception
+    {
+        cout<<e<<endl;
+    }
+    
+    catch(double e) // can catch double type exception
+    {
+        cout<<"double exception"<<endl;
+    }
+    
+    catch(...)  // this can catch all exception
+    {
+        cout<<"Handled"<<endl;
+    }
+    
+    return 0;
+}
+```
+
+### Output
+
+![Untitled](IMAGES/Untitled%2026.png)
