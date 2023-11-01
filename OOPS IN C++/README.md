@@ -3579,3 +3579,447 @@ int main()
 ### Output
 
 ![Untitled](IMAGES/Untitled%2026.png)
+
+## Dynamic Constructor in C++
+
+- Constructor can allocate dynamically created memory **to the object**.
+- Thus, object is going to use memory region, which is dynamically created by constructor.
+
+### Example
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class Dummy
+{
+    private:
+        int a, b;
+        int *p;
+    public:
+        Dummy()     
+        {
+            a = 0;
+            b = 0;
+            p = new int;
+        }
+        
+        Dummy(int x, int y, int z) 
+        {
+            a = x;
+            b = y;
+            p = new int; // dynamically created
+            *p = z;
+        }
+        
+        void showData(){
+            cout<<"Value of a = "<<a<<endl;
+            cout<<"Value of b = "<<b<<endl;
+            cout<<"Value of *p = "<<*p<<endl;
+        }
+};
+
+int main()
+{
+    Dummy o1(1, 2, 3), o2;
+    
+    o1.showData();
+    
+    return 0;
+}
+```
+
+### Output
+
+![Untitled](IMAGES/Untitled%2027.png)
+
+- while creation of object, block pointed by p is created by constructor and therfore this constructor is called as **dynamic constructor**.
+- Dynamic constructor don’t create memory for object but create memory block access by the object.
+
+## Namespace in C++
+
+- Namespace is a container for identifiers.
+- A namespace is a declarative region that **provides a scope to the identifiers (the names of types, functions, variables, etc) inside it**.
+- It puts the names of its members in a distinct space so that they don’t conflict with names in other namespace or global namespace.
+
+```cpp
+namespace MySpace
+{
+	// declarations
+}
+```
+
+- Namespaces definition doesn’t terminates with a semicolon like in class definition.
+- The namespace definition must be done at global scope, or nested inside another namespace.
+- We can use an alias name for our namespace name, for ease of use.
+- eg→ **namespace ms = MySpace;**
+- Namespace is not a class, we cannot create instance of namespace.
+- There can be **unnamed namespace** also.
+- An unnamed namespace is **superior to the static keyword**, primarily because of the fact that keyword static applies only to the variables declarations and functions, not to the user-defined types.
+
+```cpp
+namespace
+{
+	// declarations
+}
+```
+
+### namespaces can be extended
+
+- A namespace definition can be continued and extended over multiple files, there are not redefined or overridden.
+
+### File1.h
+
+```cpp
+namespace MySpace
+{
+	int a, b;
+	void f1();
+}
+```
+
+### File2.h
+
+```cpp
+namespace MySpace
+{
+	int x, y;
+	void f2();
+}
+```
+
+- We can include namespaces by using keyword otherwise we have to specify indentifiers of namespaces as **namespace_Name :: identifiers_name;  // std::cout;**
+
+```cpp
+using namespace std;
+using namespace MySpace;
+```
+
+- If we have same name identifiers in different namespaces, then we have to specify them seperately using scope resolution operator.
+- If a function is declared in namespace, so while defining it outiside the namespace we have to specify it by putting namespace name with scope resolution operator between function return type and name.
+- If we have a function declared inside a namespace and we have also included that namespace in our program by using keyword then also while defining that function we have to specify it by putting namespace name with scope resolution operator between function return type and name.
+
+```cpp
+#include<iostream>
+using namespace std;
+
+// std is also a namespace we include it by using keyword
+
+namespace MySpace
+{
+    int a, b = 10;
+    void f1();
+    class A
+    {
+        private:
+            int x, y;
+        public:
+            void fun(); // declared inside class, so have to define outside class
+    };
+}
+
+// Function definition should be specifed with namespace name and scope resolution operator
+
+void MySpace:: f1() 
+{
+    cout<<"Function definition declared in namespace MySpace"<<endl;
+}
+
+void MySpace::A::fun()
+{
+    cout<<"Definition of function declared inside class A, which is inside namespace MySpace"<<endl;
+}
+
+namespace Dummy
+{
+    void funDummy()
+    {
+        cout<<"This namespace is included by using keyword"<<endl;
+    }
+}
+
+using namespace Dummy;
+
+namespace {
+    void f5()
+    {
+        cout<<"Unnamed namespace"<<endl;
+    }
+}
+
+int main()
+{
+    namespace ms = MySpace; // namespace alias;
+    
+    MySpace::a = 5; // or ms::a = 5;
+    
+    cout<<MySpace::b<<endl;
+    
+    // if we dont want write MySpace:: so we have to include this namespace by using keyword.
+    
+    // if we have same variable in different namespace,
+    // then we have to specify them seperatley using scope resolution operator
+    
+    ms::f1();  // alias
+    
+    ms::A obj;
+    
+    obj.fun();
+    
+    funDummy(); // without specifying namespace name (namespace is included by using keyword)
+    
+    f5(); // unnamed namespace
+    
+    return 0;
+}
+```
+
+## The using directive
+
+- **using** keyword allows us to import and entire namespace into our program with a gloabl scope.
+- It can be used to import a namespace into another namespace or any program.
+
+### 1. Including Namespace in Namespace
+
+![Untitled](IMAGES/Untitled%2028.png)
+
+### 2. Including namespace in program
+
+![Untitled](IMAGES/Untitled%207.jpeg)
+
+## Virtual Destructor in C++
+
+- we know base class pointer can point to child class objects.
+- if we create child class object dynamically to which base class pointer is pointing.
+
+```cpp
+A *p;
+p= new B; // Base class pointer pointing to child class object
+// B class object is created dynamically
+```
+
+- Now, dynamically created memory can only be released using delete keyword.
+- So, for freeing that memory we will write **delete p;** because p is pointing to a dynamic created object and that object can only be accessed from p, so if we don’t delete p **(delete p means delting the dynamic block (B class Object))**, than p will get destroyed as it is an local variable but the dynamic block to which it is pointing will not get deleted and hence creating a **memory leak** as now memory of dynamically created object cannot be released.
+- **memory leak is when memory is consumed but cannot be used or accessed.**
+- Now let say the child class object have some memory resources which resides outside the object but is handled with the help of object only because object have the pointer which is pointing to that memory resource.
+- Now this memory resources should be realeased by child class destructor.
+- but since when we write delete p, early binding is taking place and in early binding compiler decide which function should invoke and for that it refers to the type of pointer which is of A type and since it is early binding so it will not get to know to which address the pointer is pointing because the pointer is pointing to which address is known at run time.
+- So here the pointer is of A type so the compiler will bind the call with only A class destructor.
+- The above problem arises just because of early binding and now B class destructor will not be called and the memory resources that resided outside the object of B class but handled by the pointer of B class object will never get realeased.
+- So, to tackle this problem we have to perform late binding because in late binding the compiler will get to know the address to which the base class pointer is pointing and since it is pointing to child class object, so the compiler will bind child class destructor with the call and since it is inheritance so just after the chlid  class destructor exectution, child class destructor calls the base class destructor also.
+- In C++, we tell the compiler to perform late binding by writing virtual keyword before the function of which late binding need to be perfomed.
+- Here we have to perform late binding of the destructor function and hence we have to write virtual keyword before base class destructor.
+- and hence now the destructor is called as virtual destructor.
+- and not only base class destructor is called virtual but all its descendant classes destructor are now and called as virtual destructor but we don’t need to write virtual keyword in all the child classes.
+
+## Early Binding (problem)
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    private:
+        int a, b;
+    public:
+    void f1()
+        {
+            cout<<"Base Class"<<endl;
+        }
+        ~A()
+        {
+            cout<<"Base Class Destructor"<<endl;
+        }
+};
+
+class B : public A
+{
+    private:
+        int *ptr;
+    public:
+        B()
+        {
+            ptr = new int;
+        }
+        ~B()
+        {
+            cout<<"Child Class Destructor"<<endl;
+            delete ptr;
+        }
+};
+
+int main()
+{
+    A *p = new B; // base class pointer pointing to child class object
+                //  B class object is created dynamically
+                
+    p->f1();
+    
+    delete p;   // early binding
+
+    return 0;
+
+}
+```
+
+## Output
+
+![Untitled](IMAGES/Untitled%2029.png)
+
+- child class object have some memory resources which resides outside the object but is handled with the help of object only because object have the pointer which is pointing to that memory resource.
+- Since due to early binding child class destructor didn’t called and hence memory resources resided outside the child class object are not released.
+
+## Solution (Late Binding)
+
+```cpp
+#include<iostream>
+using namespace std;
+
+class A
+{
+    private:
+        int a, b;
+    public:
+    void f1()
+        {
+            cout<<"Base Class"<<endl;
+        }
+        virtual ~A()    // virtual Destructor
+        {
+            cout<<"Base Class Destructor"<<endl;
+        }
+};
+
+class B : public A
+{
+    private:
+        int *ptr;
+    public:
+        B()
+        {
+            ptr = new int;
+        }
+        ~B()
+        {
+            cout<<"Child Class Destructor"<<endl;
+            delete ptr;
+        }
+};
+
+int main()
+{
+    A *p = new B; // base class pointer pointing to child class object
+                //  B class object is created dynamically
+                
+    p->f1();
+    
+    delete p;   // late binding
+
+    return 0;
+
+}
+```
+
+## Output
+
+![Untitled](IMAGES/Untitled%2030.png)
+
+- The problem is resolved by perfoming late binding of the destructor function using virtual keyword.
+
+## Nested Class
+
+- Class inside a class is called nested class.
+- A nested class is a member and as such has the same acces rights as any other member.
+- The members of an enclosing class have no special access to members of a nested class; the usual access rules shall be obeyed.
+- Inner nested class has no identity of itself so if we want to create obj of inner nested class outside than there are certain rules.
+    - The inner class should be defined in public region of outer class.
+    - and the class under which it is encapsulated will come first followed by scope resolution operator and then the inner class name.  **Student :: Address a1;**
+    
+    ### Example
+    
+    ```cpp
+    #include<iostream>
+    
+    using namespace std;
+    
+    class Student
+    {
+        private:
+            int rollno;
+            string name;
+      
+            class Address
+            {
+                private:
+                    int houseno;
+                    string street;
+                    string city;
+                    string state;
+                    string pincode;
+                public:
+                    void setAddres(int h, string s, string c, string st, string p)
+                    {
+                        houseno = h;
+                        street = s;
+                        city = c;
+                        state = st;
+                        pincode = p;
+                    }
+                    
+                    void showAddress()
+                    {
+                        cout<<houseno<<" "<<street<<" "<<city<<" "<<state<<" "<<pincode<<endl;
+                    }
+            };
+            
+            Address add; // object of nested class
+            
+            public:
+                void setRoll(int r)
+                {
+                    rollno = r;
+                }
+                
+                void setName(string n)
+                {
+                    name = n;
+                }
+                
+                void setAddres(int h, string s, string c, string st, string p)
+                {
+                    add.setAddres(h, s, c, st, p);
+                }
+                
+                void showStudent()
+                {
+                    cout<<"Student Data"<<endl;
+                    cout<<rollno<<endl;
+                    cout<<name<<endl;
+                    add.showAddress();
+                }
+    };
+    
+    int main()
+    {
+        Student st;
+        
+        // Student::Address add; // error declared private;
+        // Address add; can be accessed like this also in modern compilers
+        // should be declared public
+        
+        st.setName("Vishal");
+        st.setRoll(1);
+        st.setAddres(215, "Vaibhar Viahar Nawada", "Dehradun", "Uttarakhand", "248001");
+        
+        st.showStudent();
+        
+        return 0;
+    }
+    ```
+    
+    ### Output
+    
+    ![Untitled](IMAGES/Untitled%2031.png)
+    
+    # STL (Standard Template Library)
